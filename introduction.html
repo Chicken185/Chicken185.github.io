@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粤音百科</title>
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://chicken185.github.io/photos_in_homepage/background.jpg') no-repeat center center fixed; /* 替换 'your-image-link.jpg' 为你的图片链接 */
+            background-size: cover; /* 确保背景图片覆盖整个页面 */
+            color: black;
+            overflow-x: hidden;
+        }
+
+        /* 粒子画布 */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* 提高层级，使粒子浮动到照片表面 */
+            pointer-events: none; /* 确保粒子画布不影响鼠标交互 */
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center; /* 垂直居中对齐 */
+            justify-content: space-between; /* 两端对齐 */
+            padding: 0 50px;
+            z-index: 1000;
+        }
+
+        .logo {
+            height: 60px; /* 调整 Logo 高度 */
+            width: auto; /* 保持宽高比 */
+            margin-right: 20px; /* 减少右边距 */
+            object-fit: contain; /* 确保图片完整显示 */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ff88;
+        }
+
+        /* 内容区域 */
+        main {
+            margin-top: 100px;
+            padding: 40px;
+        }
+
+        /* 照片卡片容器 */
+        .gallery {
+            position: relative;
+            z-index: 1; /* 确保卡片在粒子画布下方 */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            aspect-ratio: 4/3;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, rgba(0, 255, 136, 0.8), rgba(0, 140, 255, 0.8)); /* 渐变背景 */
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px; /* 增大字体 */
+            color: white; /* 白色字体 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 添加文字阴影 */
+            border-radius: 0 0 10px 10px; /* 圆角效果 */
+            transition: all 0.3s ease-in-out; /* 添加过渡效果 */
+        }
+
+        .card:hover .card-text {
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.9), rgba(255, 0, 140, 0.9)); /* 鼠标悬停时改变背景颜色 */
+            transform: translateY(-5px); /* 悬停时向上移动 */
+        }
+        /* ===== 百科页面专属样式 ===== */
+        .knowledge-container {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 0 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            color: #FBECDE;
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        /* 分类版块样式 */
+        .category-section {
+            margin-bottom: 60px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            color: #FBECDE;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+        }
+
+        /* 可折叠条目 */
+        .accordion-item {
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+        }
+
+        /* 折叠标题 */
+        .accordion-header {
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-header h3 {
+            font-size: 1.2rem;
+            color: #fff;
+            margin: 0;
+        }
+
+        /* 展开指示器 */
+        .accordion-header::after {
+            content: "▶";
+            color: #FBECDE;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-header::after {
+            transform: rotate(90deg);
+        }
+
+        /* 折叠内容 */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 30px;
+            transition: 
+                max-height 0.3s ease-out,
+                padding 0.3s ease-out;
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 1000px; /* 根据实际内容调整 */
+            padding: 20px 30px;
+        }
+
+        /* 内容样式 */
+        .content-text {
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .category-section {
+                padding: 20px;
+            }
+            
+            .accordion-header {
+                padding: 15px 20px;
+            }
+            
+            .accordion-content {
+                padding: 0 20px;
+            }
+            
+            .accordion-item.active .accordion-content {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 共享粒子层和导航栏 -->
+    <div id="particles-js"></div>
+    <nav>
+        <img src="https://chicken185.github.io/photos_in_homepage/logo.png" alt="团队Logo" class="logo">
+        <div class="nav-links">
+            <a href="https://chicken185.github.io/index.html">首页</a>
+            <a href="#">行业动态</a>
+            <a href="#">关于我们</a>
+            <a href="#">联系我们</a>
+        </div>
+    </nav>
+
+    <!-- 百科内容区域 -->
+    <main class="knowledge-container">
+        <h1 class="main-title">粤音百科</h1>
+
+        <!-- 艺术特色板块 -->
+        <section class="category-section">
+            <h2 class="category-title">派别介绍</h2>
+            
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>薛派</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">创始人：薛觉先，1904年出生于广东省佛山市。
+                        其表演风格挥洒自如、细腻入微，擅长融合京剧、电影等多种艺术精华于粤剧之中。他戏路广阔，无论是小武生、文武生，还是反串旦角，都能演绎得淋漓尽致。
+                        “薛腔”唱腔圆润流畅、优美动听，韵味浓郁，真假声结合得天衣无缝，注重以声传情，运用丰富的行腔技巧和细腻的情感表现，塑造出一个个栩栩如生的人物形象，如在《三伯爵》中的精彩演绎。
+                        </p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>马派</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">创始人：马师曾，广东顺德人。
+                        其表演风格幽默诙谐、充满生活气息，擅长将社会现实与民间故事情节巧妙结合，塑造出个性鲜明、生动活泼的角色，尤其擅长表现底层人物和喜剧角色，如《苦凤莺怜》中的余侠魂。
+                        “乞儿喉”为其独树一帜的唱腔，音色沙哑而富有力度，具有很强的表现力和感染力，能够淋漓尽致地传达角色的情感体验和生活的复杂韵味。
+                        </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>白派</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">创始人：白驹荣，广东顺德人。
+                        其表演风格清新脱俗、朴实自然，专注于人物内心世界的深度挖掘，擅长小生与旦角角色，细腻入微的表演将人物情感变化展现得淋漓尽致。
+                        “白腔”以真声为主，嗓音清脆悦耳、行腔婉转流畅，强调韵味与情感的表达，听来如沐春风，如在《客途秋恨》中的演唱。
+                        </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>廖派</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">创始人：廖侠怀，广东新会人。
+                        以丑角表演见长，其表演风格既夸张又真实，幽默风趣，善于通过独特的肢体语言、表情和动作营造喜剧效果，将丑角的滑稽与人物性格完美融合，使观众在欢笑中领略角色的魅力。
+                        其唱腔灵活多变，根据角色和剧情的需要创新变化，以独特的节奏和韵律为表演增添光彩，如在《十八罗汉收大鹏》中，唱腔与表演相得益彰。
+                        </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>桂派</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">创始人：桂名扬，广东南海人。
+                        以武生著称，动作刚劲有力、利落大方，舞台风度稳健大气，具有强烈的感染力，擅长通过精湛的武打和高难度技巧展现英雄形象。
+                        其唱腔高亢激昂、气势恢宏，注重声音的力度和穿透力，能够完美展现武生角色的豪迈与霸气，如在《赵子龙催归》中，唱腔尽显英雄气概。
+                        </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>红派</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">创始人：红线女，原名邝健廉，广东开平人。
+                        其表演细腻入神，擅长通过眼神、动作等细节传达人物情感，塑造了许多性格鲜明的女性角色。
+                        “红腔”以甜美、清脆、圆润、柔和、娇媚为特色，音域宽广，音色优美，真假声转换自然流畅，艺术感染力强烈，代表作品有《荔枝颂》《昭君出塞》等。
+                        
+                        </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 经典剧目板块 -->
+        <section class="category-section">
+            <h2 class="category-title">经典剧目</h2>
+            
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>《帝女花》</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">唐涤生代表作品，讲述长平公主与周世显的悲情故事...</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>《紫钗记》</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">改编自汤显祖同名戏剧，保留原著精髓融入粤剧特色...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 传承发展板块 -->
+        <section class="category-section">
+            <h2 class="category-title">传承发展</h2>
+            
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>非遗保护</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">2009年列入联合国教科文组织非遗名录...</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <h3>现代创新</h3>
+                </div>
+                <div class="accordion-content">
+                    <p class="content-text">结合多媒体技术打造沉浸式剧场体验...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 折叠交互逻辑
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                item.classList.toggle('active');
+                
+                // 关闭其他展开项
+                document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                    if(otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 150 }, // 增加粒子数量
+                color: { value: '#00ffff' },
+                shape: { 
+                    type: 'circle',
+                    stroke: { width: 1, color: '#00ffff' }, // 添加粒子边框
+                },
+                opacity: { 
+                    value: 0.7, // 增加粒子透明度
+                    random: true, // 随机透明度
+                    anim: { enable: true, speed: 1, opacity_min: 0.3, sync: false } // 动态透明度
+                },
+                size: { 
+                    value: 5, // 增大粒子大小
+                    random: true, // 随机大小
+                    anim: { enable: true, speed: 10, size_min: 0.5, sync: false } // 动态大小
+                },
+                move: {
+                    enable: true,
+                    speed: 4, // 增加移动速度
+                    direction: 'none',
+                    random: true, // 随机移动方向
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: { enable: true, rotateX: 600, rotateY: 1200 } // 增加吸引效果
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'grab' }, // 改为抓取效果
+                    onclick: { enable: true, mode: 'bubble' }, // 点击时产生气泡效果
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 200, line_linked: { opacity: 0.5 } }, // 抓取模式
+                    bubble: { distance: 200, size: 10, duration: 2, opacity: 0.8, speed: 3 }, // 气泡模式
+                    repulse: { distance: 100, duration: 0.4 }, // 排斥模式
+                    push: { particles_nb: 4 }, // 点击时增加粒子
+                    remove: { particles_nb: 2 } // 点击时移除粒子
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>

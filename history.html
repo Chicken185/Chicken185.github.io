@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 保持与首页相同的meta和title -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粤剧发展历程</title>
+    <!-- 保持原有全局样式 -->
+    <style>
+        /* 新增时间轴专属样式 */
+        .history-container {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 0 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 2.8rem;
+            color: #FBECDE;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #fff;
+            margin: 40px 0 20px;
+            padding-left: 20px;
+            border-left: 4px solid #00ff88;
+        }
+
+        .timeline-intro {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            line-height: 1.8;
+            margin-bottom: 50px;
+        }
+
+        /* 时间轴核心样式 */
+        .timeline-container {
+            position: relative;
+            padding: 50px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            width: 4px;
+            background: linear-gradient(to bottom, #00ff88, #0096ff);
+            height: 100%;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 60px 0;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+        }
+
+        .timeline-year {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FBECDE;
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .timeline-image {
+            width: 45%;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .timeline-image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .timeline-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .timeline-line {
+                left: 30px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(odd) {
+                flex-direction: column;
+                margin-left: 60px;
+            }
+
+            .timeline-content,
+            .timeline-image {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .timeline-year {
+                left: -70px;
+                transform: none;
+            }
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://chicken185.github.io/photos_in_homepage/background.jpg') no-repeat center center fixed; /* 替换 'your-image-link.jpg' 为你的图片链接 */
+            background-size: cover; /* 确保背景图片覆盖整个页面 */
+            color: black;
+            overflow-x: hidden;
+        }
+
+        /* 粒子画布 */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* 提高层级，使粒子浮动到照片表面 */
+            pointer-events: none; /* 确保粒子画布不影响鼠标交互 */
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center; /* 垂直居中对齐 */
+            justify-content: space-between; /* 两端对齐 */
+            padding: 0 50px;
+            z-index: 1000;
+        }
+
+        .logo {
+            height: 60px; /* 调整 Logo 高度 */
+            width: auto; /* 保持宽高比 */
+            margin-right: 20px; /* 减少右边距 */
+            object-fit: contain; /* 确保图片完整显示 */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ff88;
+        }
+
+        /* 内容区域 */
+        main {
+            margin-top: 100px;
+            padding: 40px;
+        }
+
+        /* 照片卡片容器 */
+        .gallery {
+            position: relative;
+            z-index: 1; /* 确保卡片在粒子画布下方 */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            aspect-ratio: 4/3;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, rgba(0, 255, 136, 0.8), rgba(0, 140, 255, 0.8)); /* 渐变背景 */
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px; /* 增大字体 */
+            color: white; /* 白色字体 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 添加文字阴影 */
+            border-radius: 0 0 10px 10px; /* 圆角效果 */
+            transition: all 0.3s ease-in-out; /* 添加过渡效果 */
+        }
+
+        .card:hover .card-text {
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.9), rgba(255, 0, 140, 0.9)); /* 鼠标悬停时改变背景颜色 */
+            transform: translateY(-5px); /* 悬停时向上移动 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 保持与首页相同的粒子系统和导航栏 -->
+    <div id="particles-js"></div>
+    <nav>
+        <nav>
+            <img src="https://chicken185.github.io/photos_in_homepage/logo.png" alt="团队Logo" class="logo">
+            <div class="nav-links">
+                <a href="https://chicken185.github.io/index.html">首页</a>
+                <a href="#">行业动态</a>
+                <a href="#">关于我们</a>
+                <a href="#">联系我们</a>
+            </div>
+        </nav>
+    </nav>
+
+    <!-- 新版内容区域 -->
+    <main class="history-container">
+        <h1 class="page-title">粤剧发展历程</h1>
+        
+        <section>
+            <h2 class="section-title">文化瑰宝的诞生</h2>
+            <div class="timeline-intro">
+                <p>粤剧(Cantonese Opera)，又称广府戏、广东大戏，流行于珠江三角洲等广府民系聚居地，是广东及广西粤方言区最大的剧种。发源于佛山，以粤方言演唱，是汉族传统戏曲之一、人类非物质文化遗产代表作。粤剧形成于广东，后传入广西、香港、澳门、台湾，在东南亚和美洲各国有华侨居住的地方均有粤剧演出。</p>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">历史演进脉络</h2>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <!-- 时间轴项目示例 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">明代成化年间 </span>
+                        
+                        <p>
+                            广州地区民间好尚戏曲，外来戏班演出频繁，并有众多本地子弟参加演唱，孕育了粤剧的种子。
+                            </p>
+                    </div>
+                    <!-- <div class="timeline-image">
+                        <img src="#" alt="早期粤剧">
+                    </div> -->
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">清初 </span>
+                        <p>出现被称为“土优”的本地戏班及其演唱的“广腔”，为粤剧的形成打下了基础。清中叶至嘉庆、道光年间，粤剧在本地班既向外江班吸收、借鉴，又相互竞争中逐渐形成。</p>
+                    </div>
+                    <!-- <div class="timeline-image">
+                        <img src="./photos_in_timeline/reform-era.jpg" alt="改革时期">
+                    </div> -->
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">清代雍正年间 </span>
+                        <p>北京名伶张五，人称摊手五，因躲避清迁的追捕，化装易服逃亡来粤，建立“琼花会馆”，是粤剧界最早的戏行组织.</p>
+                    </div>
+                    <div class="timeline-image">
+                        <img src="https://chicken185.github.io/photos_in_history_page/4.png" alt="改革时期">
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">20世纪20年代  </span>
+                        <p>辛亥革命后，粤剧受文明戏、话剧的影响，20年代以后又受西方现代电影艺术的影响，从而引进了时代歌曲和西方爵士音乐，除使用民族乐器演奏外，还使用了小提琴、电吉它、爵士鼓、小号等，并改“戏棚官话”为广州方言—粤语演唱</p>
+                    </div>
+                    <div class="timeline-image">
+                        <img src="https://chicken185.github.io/photos_in_history_page/1.png" alt="改革时期">
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">1912年前后 </span>
+                        <p>
+                            粤剧演出基本上已改用广州方言，表演体系日趋完善，开始在梆簧中穿插民歌小调，并改假声演唱为“平喉”演唱。
+                            </p>
+                    </div>
+                    <div class="timeline-image">
+                        <img src="https://chicken185.github.io/photos_in_history_page/2.png" alt="改革时期">
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2006年5月20日</span>
+                        <p>列入第一批国家级非物质文化遗产名录，编号 IV一36。</p>
+                    </div>
+                    <!-- <div class="timeline-image">
+                        <img src="./photos_in_timeline/reform-era.jpg" alt="改革时期">
+                    </div> -->
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">
+                            2009年10月2日</span>
+                        <p>由广东、香港和澳门联合申报，粤剧被列为联合国教科文组织人类非物质文化遗产代表作名录。</p>
+                    </div>
+                    <div class="timeline-image">
+                        <img src="https://chicken185.github.io/photos_in_history_page/3.png" alt="改革时期">
+                    </div>
+                </div>
+
+                <!-- 可继续添加更多时间轴项目 -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 保持原有粒子动画脚本 -->
+       <!-- 粒子动画脚本 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 150 }, // 增加粒子数量
+                color: { value: '#00ffff' },
+                shape: { 
+                    type: 'circle',
+                    stroke: { width: 1, color: '#00ffff' }, // 添加粒子边框
+                },
+                opacity: { 
+                    value: 0.7, // 增加粒子透明度
+                    random: true, // 随机透明度
+                    anim: { enable: true, speed: 1, opacity_min: 0.3, sync: false } // 动态透明度
+                },
+                size: { 
+                    value: 5, // 增大粒子大小
+                    random: true, // 随机大小
+                    anim: { enable: true, speed: 10, size_min: 0.5, sync: false } // 动态大小
+                },
+                move: {
+                    enable: true,
+                    speed: 4, // 增加移动速度
+                    direction: 'none',
+                    random: true, // 随机移动方向
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: { enable: true, rotateX: 600, rotateY: 1200 } // 增加吸引效果
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'grab' }, // 改为抓取效果
+                    onclick: { enable: true, mode: 'bubble' }, // 点击时产生气泡效果
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 200, line_linked: { opacity: 0.5 } }, // 抓取模式
+                    bubble: { distance: 200, size: 10, duration: 2, opacity: 0.8, speed: 3 }, // 气泡模式
+                    repulse: { distance: 100, duration: 0.4 }, // 排斥模式
+                    push: { particles_nb: 4 }, // 点击时增加粒子
+                    remove: { particles_nb: 2 } // 点击时移除粒子
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>

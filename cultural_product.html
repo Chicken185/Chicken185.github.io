@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队展示网站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://chicken185.github.io/photos_in_homepage/background.jpg') no-repeat center center fixed; /* 替换 'your-image-link.jpg' 为你的图片链接 */
+            background-size: cover; /* 确保背景图片覆盖整个页面 */
+            color: black;
+            overflow-x: hidden;
+        }
+
+        /* 粒子画布 */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* 提高层级，使粒子浮动到照片表面 */
+            pointer-events: none; /* 确保粒子画布不影响鼠标交互 */
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center; /* 垂直居中对齐 */
+            justify-content: space-between; /* 两端对齐 */
+            padding: 0 50px;
+            z-index: 1000;
+        }
+
+        .logo {
+            height: 60px; /* 调整 Logo 高度 */
+            width: auto; /* 保持宽高比 */
+            margin-right: 20px; /* 减少右边距 */
+            object-fit: contain; /* 确保图片完整显示 */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ff88;
+        }
+
+        /* 内容区域 */
+        main {
+            margin-top: 100px;
+            padding: 40px;
+        }
+
+        /* 照片卡片容器 */
+        .gallery {
+            position: relative;
+            z-index: 1; /* 确保卡片在粒子画布下方 */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            aspect-ratio: 4/3;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, rgba(0, 255, 136, 0.8), rgba(0, 140, 255, 0.8)); /* 渐变背景 */
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px; /* 增大字体 */
+            color: white; /* 白色字体 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 添加文字阴影 */
+            border-radius: 0 0 10px 10px; /* 圆角效果 */
+            transition: all 0.3s ease-in-out; /* 添加过渡效果 */
+        }
+
+        .card:hover .card-text {
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.9), rgba(255, 0, 140, 0.9)); /* 鼠标悬停时改变背景颜色 */
+            transform: translateY(-5px); /* 悬停时向上移动 */
+        }
+
+        .content-image {
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            height: calc(100vh - 100px); /* 减去导航栏的高度 */
+            z-index: 1; /* 确保图片在粒子动画下方 */
+            position: relative;
+            padding: 20px; /* 添加内边距 */
+        }
+
+        .content-image img {
+            max-width: 80%; /* 限制图片宽度 */
+            max-height: 80%; /* 限制图片高度 */
+            object-fit: contain; /* 确保图片完整显示 */
+            border-radius: 15px; /* 添加圆角 */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* 添加阴影效果 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+        }
+
+        .content-image img:hover {
+            transform: scale(1.05); /* 鼠标悬停时放大图片 */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5); /* 鼠标悬停时增强阴影 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 粒子容器 -->
+    <div id="particles-js"></div>
+
+    <!-- 导航栏 -->
+    <nav>
+        <img src="https://chicken185.github.io/photos_in_homepage/logo.png" alt="团队Logo" class="logo">
+        <div class="nav-links">
+            <a href="https://chicken185.github.io/index.html">首页</a>
+            <a href="#">行业动态</a>
+            <a href="#">关于我们</a>
+            <a href="#">联系我们</a>
+        </div>
+    </nav>
+
+    <!-- 内容区域 -->
+    <main>
+        <div class="content-image">
+            <img src="https://chicken185.github.io/photos_in_homepage/cultural products.jpg" alt="展示图片" />
+        </div>
+    </main>
+
+    <!-- 粒子动画脚本 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 150 }, // 增加粒子数量
+                color: { value: '#00ffff' },
+                shape: { 
+                    type: 'circle',
+                    stroke: { width: 1, color: '#00ffff' }, // 添加粒子边框
+                },
+                opacity: { 
+                    value: 0.7, // 增加粒子透明度
+                    random: true, // 随机透明度
+                    anim: { enable: true, speed: 1, opacity_min: 0.3, sync: false } // 动态透明度
+                },
+                size: { 
+                    value: 5, // 增大粒子大小
+                    random: true, // 随机大小
+                    anim: { enable: true, speed: 10, size_min: 0.5, sync: false } // 动态大小
+                },
+                move: {
+                    enable: true,
+                    speed: 4, // 增加移动速度
+                    direction: 'none',
+                    random: true, // 随机移动方向
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: { enable: true, rotateX: 600, rotateY: 1200 } // 增加吸引效果
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'grab' }, // 改为抓取效果
+                    onclick: { enable: true, mode: 'bubble' }, // 点击时产生气泡效果
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 200, line_linked: { opacity: 0.5 } }, // 抓取模式
+                    bubble: { distance: 200, size: 10, duration: 2, opacity: 0.8, speed: 3 }, // 气泡模式
+                    repulse: { distance: 100, duration: 0.4 }, // 排斥模式
+                    push: { particles_nb: 4 }, // 点击时增加粒子
+                    remove: { particles_nb: 2 } // 点击时移除粒子
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
