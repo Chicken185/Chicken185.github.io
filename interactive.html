@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>互动体验 | 审美主体项目网站</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .quiz-layout {
+      display: grid;
+      gap: 24px;
+    }
+
+    .quiz-status-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .quiz-status-card,
+    .quiz-card,
+    .quiz-result-panel {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+    }
+
+    .quiz-status-title {
+      font-size: 14px;
+      color: #b8c2e0;
+      margin-bottom: 8px;
+    }
+
+    .quiz-status-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f5f7ff;
+    }
+
+    .quiz-list {
+      display: grid;
+      gap: 22px;
+    }
+
+    .quiz-card {
+      transition: 0.25s ease;
+    }
+
+    .quiz-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(110, 231, 255, 0.2);
+    }
+
+    .quiz-card h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .quiz-label {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #6ee7ff;
+      background: rgba(110, 231, 255, 0.08);
+      border: 1px solid rgba(110, 231, 255, 0.15);
+    }
+
+    .quiz-desc {
+      color: #b8c2e0;
+      margin-bottom: 16px;
+    }
+
+    .quiz-media-placeholder {
+      min-height: 180px;
+      border: 1px dashed rgba(110, 231, 255, 0.22);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #b8c2e0;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .quiz-image-frame {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(110, 231, 255, 0.2);
+      background:
+        radial-gradient(circle at top right, rgba(110, 231, 255, 0.12), transparent 28%),
+        linear-gradient(160deg, rgba(110, 231, 255, 0.08), rgba(155, 123, 255, 0.08)),
+        rgba(255, 255, 255, 0.03);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 16px 32px rgba(0, 0, 0, 0.24);
+      isolation: isolate;
+    }
+
+    .quiz-image-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(8, 12, 24, 0.04) 0%, rgba(8, 12, 24, 0.08) 62%, rgba(8, 12, 24, 0.28) 100%);
+      pointer-events: none;
+    }
+
+    .quiz-image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      transform: scale(var(--quiz-image-scale, 1));
+    }
+
+    .quiz-image--q1 {
+      object-position: center 58%;
+    }
+
+    .quiz-image--q2 {
+      --quiz-image-scale: 1.03;
+      object-position: center 42%;
+    }
+
+    .audio-placeholder {
+      min-height: 100px;
+    }
+
+    .audio-stage {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .audio-player-shell {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(110, 231, 255, 0.2);
+      background:
+        radial-gradient(circle at top right, rgba(110, 231, 255, 0.12), transparent 28%),
+        linear-gradient(160deg, rgba(110, 231, 255, 0.08), rgba(155, 123, 255, 0.08)),
+        rgba(255, 255, 255, 0.03);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 14px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    .audio-player-shell::before {
+      content: "Audio Prompt";
+      display: inline-flex;
+      margin-bottom: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dff9ff;
+      background: rgba(7, 11, 22, 0.56);
+      border: 1px solid rgba(110, 231, 255, 0.18);
+    }
+
+    .quiz-audio {
+      width: 100%;
+      display: block;
+    }
+
+    .audio-support-note {
+      margin-top: 12px;
+      color: #b8c2e0;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .audio-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .audio-meta-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .audio-meta-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #f5f7ff;
+    }
+
+    .audio-file-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      color: #f5f7ff;
+      background: rgba(110, 231, 255, 0.1);
+      border: 1px solid rgba(110, 231, 255, 0.18);
+      transition: 0.2s ease;
+    }
+
+    .audio-file-link:hover {
+      background: rgba(110, 231, 255, 0.16);
+      border-color: rgba(110, 231, 255, 0.28);
+    }
+
+    .options-group {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .option-item:hover {
+      border-color: rgba(110, 231, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .option-item input {
+      accent-color: #6ee7ff;
+      transform: scale(1.05);
+    }
+
+    .quiz-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .quiz-button {
+      min-height: 50px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(110, 231, 255, 0.18);
+      background: linear-gradient(135deg, rgba(110, 231, 255, 0.16), rgba(155, 123, 255, 0.14));
+      color: #f5f7ff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .quiz-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(25, 195, 255, 0.18);
+    }
+
+    .quiz-button.secondary {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .quiz-result-panel {
+      display: none;
+      margin-top: 28px;
+    }
+
+    .quiz-result-panel.show {
+      display: block;
+    }
+
+    .quiz-result-panel h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .quiz-summary-text {
+      color: #b8c2e0;
+      margin-bottom: 20px;
+    }
+
+    .answer-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .answer-item {
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .answer-item strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="container navbar">
+        <a href="index.html" class="logo">Aesthetic <span>Subject</span></a>
+        <nav>
+          <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="about.html">项目介绍</a></li>
+            <li><a href="interactive.html">互动体验</a></li>
+            <li><a href="showcase.html">共创展示</a></li>
+            <li><a href="future-plan.html">后续安排</a></li>
+            <li><a href="feedback.html">意见反馈</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero hero">
+        <div class="container">
+          <div class="page-hero-card">
+            <div class="eyebrow">Interactive Experience / Aesthetic Judgement</div>
+            <h1>互动体验</h1>
+            <p class="page-subtitle">
+              这一页通过图像、声音与文字判断，将抽象的研究问题转化为可参与的体验。
+              你可以在作答中感受：当人工智能参与创作时，我们的审美判断究竟依赖什么，又如何被重新组织。
+            </p>
+
+            <div class="hero-meta">
+              <span class="meta-tag">6 道题</span>
+              <span class="meta-tag">图片判断</span>
+              <span class="meta-tag">音乐辨析</span>
+              <span class="meta-tag">文字判断</span>
+              <span class="meta-tag">提交反馈</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container quiz-layout">
+          <div>
+            <h2 class="section-title">体验说明</h2>
+            <p class="section-desc">
+              你的原始要求里明确指出，这一页不仅要有 6 道题，还要具备参与感、题目卡片式布局、
+              正误反馈、进度提示、重新作答和查看答案等功能。下面这一版会把这些都先做出来。
+            </p>
+          </div>
+
+          <div class="quiz-status-bar">
+            <article class="quiz-status-card">
+              <div class="quiz-status-title">总题数</div>
+              <div class="quiz-status-value">6</div>
+            </article>
+
+            <article class="quiz-status-card">
+              <div class="quiz-status-title">已作答题数</div>
+              <div class="quiz-status-value" id="answered-count">0</div>
+            </article>
+
+            <article class="quiz-status-card">
+              <div class="quiz-status-title">当前状态</div>
+              <div class="quiz-status-value" id="quiz-state-text" style="font-size: 20px;">等待作答</div>
+            </article>
+          </div>
+
+          <div class="quiz-list">
+            <article class="quiz-card" data-question="1">
+              <span class="quiz-label">第 1 题 / 图片题</span>
+              <h3>你认为下面这幅图更可能是由谁完成的？</h3>
+              <p class="quiz-desc">
+                先观察画面整体的空间感、色彩气质与构图方式，再做你的判断。
+              </p>
+              <div class="quiz-image-frame">
+                <img class="quiz-image quiz-image--q1" src="images/interactive/picture1.jpg" alt="互动体验第一题图片" loading="lazy" />
+              </div>
+              <div class="options-group">
+                <label class="option-item"><input type="radio" name="q1" value="A" /> A. 人类艺术家创作</label>
+                <label class="option-item"><input type="radio" name="q1" value="B" /> B. 人工智能生成</label>
+                <label class="option-item"><input type="radio" name="q1" value="C" /> C. 人机协同完成</label>
+              </div>
+            </article>
+
+            <article class="quiz-card" data-question="2">
+              <span class="quiz-label">第 2 题 / 图片题</span>
+              <h3>如果不知道创作者身份，你会更愿意把这幅作品视为“艺术作品”吗？</h3>
+              <p class="quiz-desc">
+                这一题更偏向审美判断本身，你可以只依据图像经验、纹理和视觉吸引力来回答。
+              </p>
+              <div class="quiz-image-frame">
+                <img class="quiz-image quiz-image--q2" src="images/interactive/picture2.jpg" alt="互动体验第二题图片" loading="lazy" />
+              </div>
+              <div class="options-group">
+                <label class="option-item"><input type="radio" name="q2" value="A" /> A. 会，我主要依据作品本身判断</label>
+                <label class="option-item"><input type="radio" name="q2" value="B" /> B. 不会，我很在意创作者是否为人类</label>
+                <label class="option-item"><input type="radio" name="q2" value="C" /> C. 不确定，我需要更多背景信息</label>
+              </div>
+            </article>
+
+            <article class="quiz-card" data-question="3">
+              <span class="quiz-label">第 3 题 / 音乐辨析题</span>
+              <h3>请试听下面的音频片段，并判断它更可能来自哪种创作方式。</h3>
+              <p class="quiz-desc">
+                这里接入了项目中的音乐文件。考虑到当前素材是 MIDI 格式，播放器与下载入口同时保留，避免不同浏览器支持差异影响作答体验。
+              </p>
+              <div class="audio-stage">
+                <div class="audio-player-shell">
+                  <audio class="quiz-audio" controls preload="metadata">
+                    <source src="audio/music.mid" type="audio/midi" />
+                    <source src="audio/music.mid" type="audio/mid" />
+                    您的浏览器暂不支持直接播放该音频，请使用下方链接打开或下载文件试听。
+                  </audio>
+                  <p class="audio-support-note">
+                    若当前浏览器无法直接播放 <code>music.mid</code>，可点击下方入口在本地播放器中打开后再返回作答。
+                  </p>
+                </div>
+
+                <div class="audio-meta">
+                  <div class="audio-meta-card">
+                    <strong>试听方式</strong>
+                    <p class="muted">优先尝试页面内播放；若无声音或控件失效，请改用下载/打开方式。</p>
+                  </div>
+                  <div class="audio-meta-card">
+                    <strong>文件入口</strong>
+                    <a class="audio-file-link" href="audio/music.mid" target="_blank" rel="noopener">打开音乐文件</a>
+                  </div>
+                </div>
+              </div>
+              <div class="options-group">
+                <label class="option-item"><input type="radio" name="q3" value="A" /> A. 人类独立创作</label>
+                <label class="option-item"><input type="radio" name="q3" value="B" /> B. 人工智能自动生成</label>
+                <label class="option-item"><input type="radio" name="q3" value="C" /> C. 人机协同创作</label>
+              </div>
+            </article>
+
+            <article class="quiz-card" data-question="4">
+              <span class="quiz-label">第 4 题 / 文字题</span>
+              <h3>当人工智能参与创作时，你认为“作者”这个概念最可能发生什么变化？</h3>
+              <div class="options-group">
+                <label class="option-item"><input type="radio" name="q4" value="A" /> A. 作者仍然只属于人类</label>
+                <label class="option-item"><input type="radio" name="q4" value="B" /> B. 作者开始变成一种协同关系</label>
+                <label class="option-item"><input type="radio" name="q4" value="C" /> C. 作者概念会彻底消失</label>
+              </div>
+            </article>
+
+            <article class="quiz-card" data-question="5">
+              <span class="quiz-label">第 5 题 / 文字题</span>
+              <h3>如果一件作品能打动你，但它是 AI 生成的，你会如何看待它的审美价值？</h3>
+              <div class="options-group">
+                <label class="option-item"><input type="radio" name="q5" value="A" /> A. 审美价值依然成立</label>
+                <label class="option-item"><input type="radio" name="q5" value="B" /> B. 审美价值会明显下降</label>
+                <label class="option-item"><input type="radio" name="q5" value="C" /> C. 价值取决于人类参与程度</label>
+              </div>
+            </article>
+
+            <article class="quiz-card" data-question="6">
+              <span class="quiz-label">第 6 题 / 文字题</span>
+              <h3>你更认同下面哪种说法？</h3>
+              <div class="options-group">
+                <label class="option-item"><input type="radio" name="q6" value="A" /> A. 审美主体始终应当是人类个体</label>
+                <label class="option-item"><input type="radio" name="q6" value="B" /> B. 审美主体正在变成分布式结构</label>
+                <label class="option-item"><input type="radio" name="q6" value="C" /> C. 审美主体这个概念已经不重要了</label>
+              </div>
+            </article>
+          </div>
+
+          <div class="quiz-controls">
+            <button class="quiz-button" id="submit-quiz-btn">提交作答</button>
+            <button class="quiz-button secondary" id="show-answer-btn" type="button">显示正确答案 / 查看解析</button>
+            <button class="quiz-button secondary" id="reset-quiz-btn" type="button">重新作答</button>
+          </div>
+
+          <div class="quiz-result-panel" id="quiz-result-panel">
+            <h3>你的互动结果</h3>
+            <p class="quiz-summary-text" id="quiz-summary-text">
+              这里会在提交后显示你的结果总结。
+            </p>
+
+            <div class="answer-list hidden" id="answer-list">
+              <div class="answer-item">
+                <strong>第 1 题参考答案：B. 人工智能生成</strong>
+                解析：本题更强调“创作归属的模糊性”，用于引出主体边界的变化。
+              </div>
+              <div class="answer-item">
+                <strong>第 2 题参考答案：A. 会，我主要依据作品本身判断</strong>
+                解析：这题强调“作品本身”与“作者身份”之间的张力。
+              </div>
+              <div class="answer-item">
+                <strong>第 3 题参考答案：B. 人工智能自动生成</strong>
+                解析：音乐题用于让用户意识到创作判断不一定能轻易区分“人”与“机器”。
+              </div>
+              <div class="answer-item">
+                <strong>第 4 题参考答案：B. 作者开始变成一种协同关系</strong>
+                解析：这是人机协同创作讨论里最核心的理论转向之一。
+              </div>
+              <div class="answer-item">
+                <strong>第 5 题参考答案：C. 价值取决于人类参与程度</strong>
+                解析：此题强调审美价值并非单一判断，而可能与创作过程有关。
+              </div>
+              <div class="answer-item">
+                <strong>第 6 题参考答案：B. 审美主体正在变成分布式结构</strong>
+                解析：这一题直接对应项目主题“分布式审美主体”。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-card">
+          <h3>互动页说明</h3>
+          <p class="footer-note">
+            这一页将“人工智能时代审美主体”的问题转化为可参与的体验模块。
+            后续你可以继续替换真实图片、音频和题目内容，让它更贴合你的项目材料。
+          </p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/interactive.js"></script>
+</body>
+</html>

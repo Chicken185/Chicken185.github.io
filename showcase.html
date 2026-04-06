@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>共创展示 | 审美主体项目网站</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .showcase-grid,
+    .process-grid,
+    .record-grid,
+    .result-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .showcase-grid {
+      grid-template-columns: 1.5fr 1fr;
+      align-items: stretch;
+    }
+
+    .showcase-card,
+    .process-card,
+    .record-card,
+    .result-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+    }
+
+    .showcase-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .showcase-card::before {
+      content: "";
+      position: absolute;
+      top: -56px;
+      right: -56px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(110, 231, 255, 0.14), transparent 72%);
+      pointer-events: none;
+    }
+
+    .video-stage {
+      margin-top: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .video-frame {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(110, 231, 255, 0.22);
+      background:
+        radial-gradient(circle at top right, rgba(110, 231, 255, 0.12), transparent 30%),
+        linear-gradient(180deg, rgba(8, 12, 24, 0.95), rgba(4, 7, 14, 0.98));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 18px 40px rgba(0, 0, 0, 0.32);
+    }
+
+    .video-frame::before {
+      content: "Main Showcase";
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 2;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dff9ff;
+      background: rgba(7, 11, 22, 0.58);
+      border: 1px solid rgba(110, 231, 255, 0.18);
+      backdrop-filter: blur(8px);
+    }
+
+    .showcase-video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #03060d;
+    }
+
+    .video-caption {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(110, 231, 255, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .video-caption-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 74px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #6ee7ff;
+      background: rgba(110, 231, 255, 0.08);
+      border: 1px solid rgba(110, 231, 255, 0.15);
+    }
+
+    .video-caption p {
+      margin: 0;
+      color: #b8c2e0;
+      line-height: 1.75;
+    }
+
+    .showcase-note-list {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .showcase-note {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .showcase-note strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #f5f7ff;
+    }
+
+    .mini-note {
+      color: #b8c2e0;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .mini-note code {
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #dff9ff;
+      background: rgba(110, 231, 255, 0.08);
+      border: 1px solid rgba(110, 231, 255, 0.15);
+    }
+
+    .process-grid,
+    .record-grid,
+    .result-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .process-step {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #6ee7ff;
+      background: rgba(110, 231, 255, 0.08);
+      border: 1px solid rgba(110, 231, 255, 0.15);
+    }
+
+    .record-box,
+    .result-box {
+      margin-top: 14px;
+      min-height: 140px;
+      border-radius: 14px;
+      border: 1px dashed rgba(110, 231, 255, 0.22);
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #b8c2e0;
+      padding: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .video-caption {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="container navbar">
+        <a href="index.html" class="logo">Aesthetic <span>Subject</span></a>
+        <nav>
+          <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="about.html">项目介绍</a></li>
+            <li><a href="interactive.html">互动体验</a></li>
+            <li><a href="showcase.html">共创展示</a></li>
+            <li><a href="future-plan.html">后续安排</a></li>
+            <li><a href="feedback.html">意见反馈</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero hero">
+        <div class="container">
+          <div class="page-hero-card">
+            <div class="eyebrow">Showcase / Human-AI Co-Creation</div>
+            <h1>人机共创展示</h1>
+            <p class="page-subtitle">
+              这一页用于展示“人机共创过程”的可视化痕迹。
+              它不仅呈现结果，也尝试让创作路径、生成逻辑与实验过程本身变得可见。
+            </p>
+
+            <div class="hero-meta">
+              <span class="meta-tag">视频展示</span>
+              <span class="meta-tag">流程可视化</span>
+              <span class="meta-tag">提示词记录</span>
+              <span class="meta-tag">成果对比</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">核心展示区</h2>
+          <p class="section-desc">
+            你的原始设想里，这一页必须预留视频位置，但也明确提出不能只放一个视频框，
+            否则会显得太单薄。所以这里我把主视频与侧边说明做成组合结构。
+          </p>
+
+          <div class="showcase-grid">
+            <article class="showcase-card">
+              <h3>主视频展示</h3>
+              <div class="video-stage">
+                <div class="video-frame">
+                  <video class="showcase-video" controls preload="metadata" playsinline>
+                    <source src="audio/video.mp4" type="video/mp4" />
+                    您的浏览器暂不支持 HTML5 视频播放，请直接访问 audio/video.mp4 查看视频。
+                  </video>
+                </div>
+                <div class="video-caption">
+                  <span class="video-caption-tag">主展映</span>
+                  <p>
+                    这里直接呈现本项目的人机共创视频。保留原生播放控件，便于暂停、拖动与全屏查看，
+                    同时通过独立展映外框和说明条，让它在页面中更像一件被正式陈列的作品。
+                  </p>
+                </div>
+              </div>
+              <p class="mini-note">
+                视频文件已接入：<code>audio/video.mp4</code>。为避免打开页面时直接加载超大文件，当前仅预加载元数据。
+              </p>
+            </article>
+
+            <article class="showcase-card">
+              <h3>展示说明</h3>
+              <p class="muted">
+                这一页的核心不是单纯“展示成品”，而是展示创作是如何发生的。
+                因此这里特别强调“过程可视化”“人机互动痕迹”“实验性与展示性”。
+              </p>
+              <div class="showcase-note-list">
+                <div class="showcase-note">
+                  <strong>观看方式</strong>
+                  <p class="muted">建议横屏或全屏观看，以保留视频原有的画面节奏和空间感。</p>
+                </div>
+                <div class="showcase-note">
+                  <strong>展示重点</strong>
+                  <p class="muted">主视频承担“核心作品”角色，侧边文字负责补充创作逻辑和观看提示。</p>
+                </div>
+                <div class="showcase-note">
+                  <strong>后续可扩展</strong>
+                  <p class="muted">后面还可以继续加入关键帧截图、分镜说明或生成参数摘要，形成完整展映页面。</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">人机共创过程</h2>
+          <p class="section-desc">
+            你原始要求中特别提到“阶段说明”“时间轴展示”“流程图展示”等方向，
+            所以这里先用 4 个阶段卡片把流程搭出来。
+          </p>
+
+          <div class="process-grid">
+            <article class="process-card">
+              <span class="process-step">阶段 01</span>
+              <h3>问题与概念设定</h3>
+              <p class="muted">
+                从“审美主体是否仍是单一人类主体”这一问题出发，明确项目的理论方向与视觉表达目标。
+              </p>
+            </article>
+
+            <article class="process-card">
+              <span class="process-step">阶段 02</span>
+              <h3>提示词与素材准备</h3>
+              <p class="muted">
+                围绕主题生成关键词、画面氛围、风格倾向和内容约束，为后续机器参与创作提供条件。
+              </p>
+            </article>
+
+            <article class="process-card">
+              <span class="process-step">阶段 03</span>
+              <h3>生成与筛选</h3>
+              <p class="muted">
+                通过人工选择、比较、调整与再生成，让“生成结果”逐步接近研究主题和展示需求。
+              </p>
+            </article>
+
+            <article class="process-card">
+              <span class="process-step">阶段 04</span>
+              <h3>整合与展示</h3>
+              <p class="muted">
+                将视频、图像、文字和网站页面整合，形成既可观看又可思考的人机共创展示结果。
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">创作记录与生成痕迹</h2>
+          <p class="section-desc">
+            这一部分用于补充视频之外的辅助展示内容，比如提示词记录、生成过程对比、成果截图等，
+            这正是你希望增加的“多模块展示”部分。
+          </p>
+
+          <div class="record-grid">
+            <article class="record-card">
+              <h3>提示词记录</h3>
+              <div class="record-box">后续在这里放提示词、关键词或生成参数摘要</div>
+            </article>
+
+            <article class="record-card">
+              <h3>生成过程对比</h3>
+              <div class="record-box">后续在这里放初版 / 中间版 / 最终版对比图</div>
+            </article>
+
+            <article class="record-card">
+              <h3>人类干预说明</h3>
+              <div class="record-box">后续在这里说明人工筛选、调整与判断环节</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">成果辅助展示</h2>
+          <p class="section-desc">
+            除了过程说明，你还可以在这里放一些补充成果内容，让这一页更饱满，也更适合项目汇报。
+          </p>
+
+          <div class="result-grid">
+            <article class="result-card">
+              <h3>成果截图区</h3>
+              <div class="result-box">后续放成果截图、关键帧、界面截屏等</div>
+            </article>
+
+            <article class="result-card">
+              <h3>实验观察区</h3>
+              <div class="result-box">后续放项目观察摘要、实验现象和阶段发现</div>
+            </article>
+
+            <article class="result-card">
+              <h3>展示延伸区</h3>
+              <div class="result-box">后续可扩展为轮播、流程图或时间轴展示</div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-card">
+          <h3>展示页意义</h3>
+          <p class="footer-note">
+            这一页的重点不是单纯展示一个完成品，而是让“创作如何发生”也成为可观看、可理解、可讨论的内容。
+          </p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
