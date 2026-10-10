@@ -1230,9 +1230,7 @@ textarea:focus-visible {
 .response-prompt {
   width: 100%;
   display: grid;
-  grid-template-columns: 34px 1fr;
-  grid-template-areas: "number title" "number note";
-  column-gap: 12px;
+  gap: 3px;
   padding: 15px 14px;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 13px;
@@ -1245,9 +1243,8 @@ textarea:focus-visible {
 
 .response-prompt:hover,
 .response-prompt.is-selected { transform: translateX(4px); border-color: rgba(110, 231, 255, 0.48); background: rgba(110, 231, 255, 0.1); }
-.response-prompt > span { grid-area: number; color: var(--accent); font-size: 11px; letter-spacing: 0.06em; }
-.response-prompt strong { grid-area: title; font-size: 15px; }
-.response-prompt small { grid-area: note; color: var(--text-secondary); font-size: 12px; }
+.response-prompt > span { color: var(--text-secondary); font-size: 13px; }
+.response-prompt strong { font-size: 15px; }
 .response-footnote { position: relative; margin-top: 24px; color: var(--text-secondary); font-size: 12px; }
 
 .feedback-card { padding: clamp(24px, 4vw, 38px); }
