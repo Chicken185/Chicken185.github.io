@@ -5,8 +5,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const contentInput = document.getElementById("feedback-content");
   const messageCard = document.getElementById("submit-message-card");
   const messageText = document.getElementById("submit-message-text");
+  const prompts = document.querySelectorAll(".response-prompt");
 
   if (!form) return;
+
+  prompts.forEach(function (prompt) {
+    prompt.addEventListener("click", function () {
+      prompts.forEach(function (item) { item.classList.remove("is-selected"); });
+      prompt.classList.add("is-selected");
+      topicInput.value = prompt.dataset.topic || "";
+      contentInput.placeholder = prompt.dataset.placeholder || contentInput.placeholder;
+      contentInput.focus();
+    });
+  });
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -26,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     messageText.textContent = `感谢你，${displayName}。你关于“${topic}”的回应已在本页面记录。当前版本是本地演示，留言尚未发送到服务器。`;
     messageCard.classList.add("show");
     form.reset();
+    prompts.forEach(function (item) { item.classList.remove("is-selected"); });
     messageCard.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 });

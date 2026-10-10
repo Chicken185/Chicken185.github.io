@@ -39,18 +39,16 @@
       <section class="section">
         <div class="container">
           <h2 class="section-title">核心展映</h2>
-          <p class="section-desc">视频是项目当前的人机共创成果入口。由于浏览器对 MOV 的支持存在差异，页面同时保留文件打开入口。</p>
+          <p class="section-desc">视频是项目当前的人机共创成果入口。点击播放器即可在本页观看，页面不会在打开时自动播放。</p>
           <div class="section-grid">
             <article class="section-card">
               <h3>主视频</h3>
               <div class="video-stage">
                 <div class="video-frame">
-                  <video class="showcase-video" controls preload="metadata" playsinline poster="images/interactive/picture1.jpg">
-                    <source src="https://github.com/Chicken185/Chicken185.github.io/releases/download/media-v1/showcase-video.mov" type="video/quicktime" />
-                    当前浏览器暂不支持页面内播放，请使用下方入口打开视频文件。
-                  </video>
+                  <video class="showcase-video" id="showcase-video" controls playsinline preload="none" poster="images/interactive/picture1.jpg" aria-describedby="video-load-status"></video>
+                  <div class="video-load-control"><button class="video-load-button" id="video-load-button" type="button">加载并播放视频 <span aria-hidden="true">↗</span></button><p class="video-load-status" id="video-load-status" aria-live="polite">点击后将在本页载入视频并自动播放。</p></div>
                 </div>
-                <div class="video-caption"><p class="muted">建议横屏或全屏观看。视频文件已压缩为适合网页展示的版本，页面只预加载元数据，不会在打开页面时主动播放。</p><a class="audio-file-link" href="https://github.com/Chicken185/Chicken185.github.io/releases/download/media-v1/showcase-video.mov" target="_blank" rel="noopener">打开或下载视频文件</a></div>
+                <div class="video-caption"><p class="muted">建议横屏或全屏观看。播放器仅在点击后载入并播放视频；不再跳转到下载页面。</p></div>
               </div>
             </article>
             <article class="section-card">
@@ -108,5 +106,6 @@
     </footer>
   </div>
   <script src="js/main.js"></script>
+  <script src="js/video-player.js"></script>
 </body>
 </html>

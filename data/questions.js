@@ -26,7 +26,7 @@ window.quizQuestions = [
     label: "第 3 题 / 声音辨析",
     title: "试听下面的音乐片段，并判断它更可能来自哪种创作方式。",
     description: "请先试听，再思考：当声音本身无法直接显示创作过程时，我们凭什么判断作者？",
-    media: { type: "audio", src: "audio/music.mid", label: "打开或下载音乐文件" },
+    media: { type: "midi", src: "audio/music.mid" },
     options: ["人类独立创作", "人工智能自动生成", "人机协同创作"],
     referenceValues: ["B"],
     referenceLabel: "B：人工智能自动生成（用于讨论不可见的生成机制）",

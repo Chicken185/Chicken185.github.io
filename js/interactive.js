@@ -52,31 +52,53 @@ document.addEventListener("DOMContentLoaded", function () {
         card.appendChild(frame);
       }
 
-      if (question.media && question.media.type === "audio") {
+      if (question.media && question.media.type === "midi") {
         const shell = document.createElement("div");
-        shell.className = "audio-player-shell";
-        const audio = document.createElement("audio");
-        audio.className = "quiz-audio";
-        audio.controls = true;
-        audio.preload = "metadata";
-        const source = document.createElement("source");
-        source.src = question.media.src;
-        source.type = "audio/midi";
-        audio.appendChild(source);
-        shell.appendChild(audio);
+        shell.className = "midi-player";
+
+        const playButton = document.createElement("button");
+        playButton.type = "button";
+        playButton.className = "midi-play-button";
+        playButton.textContent = "播放声音片段";
+        shell.appendChild(playButton);
+
+        const status = document.createElement("span");
+        status.className = "midi-player-status";
+        status.setAttribute("aria-live", "polite");
+        status.textContent = "点击后直接在页面中播放";
+        shell.appendChild(status);
 
         const note = document.createElement("p");
-        note.className = "audio-support-note";
-        note.textContent = "如果浏览器无法直接播放 MIDI，可以打开文件试听后返回继续作答。";
+        note.className = "midi-player-note";
+        note.textContent = "此播放器会在浏览器内读取并合成 MIDI 音符，无需下载或跳转。";
         shell.appendChild(note);
 
-        const link = document.createElement("a");
-        link.className = "audio-file-link";
-        link.href = question.media.src;
-        link.target = "_blank";
-        link.rel = "noopener";
-        link.textContent = question.media.label;
-        shell.appendChild(link);
+        const player = new window.ProjectMidiPlayer(question.media.src);
+        player.onEnded = function () {
+          playButton.textContent = "播放声音片段";
+          status.textContent = "播放结束，可以再次试听";
+        };
+
+        playButton.addEventListener("click", async function () {
+          if (player.isPlaying) {
+            player.stop(false);
+            playButton.textContent = "播放声音片段";
+            status.textContent = "已停止播放";
+            return;
+          }
+          playButton.disabled = true;
+          status.textContent = "正在载入声音片段…";
+          try {
+            player.activate();
+            await player.play();
+            playButton.textContent = "停止播放";
+            status.textContent = "正在播放";
+          } catch (error) {
+            status.textContent = "暂时无法播放这段声音，请刷新后重试。";
+          } finally {
+            playButton.disabled = false;
+          }
+        });
         card.appendChild(shell);
       }
 

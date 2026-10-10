@@ -9,59 +9,39 @@
 </head>
 <body>
   <div class="page-shell">
-    <header class="site-header">
-      <div class="container navbar">
-        <a href="index.html" class="logo">Aesthetic <span>Subject</span></a>
-        <nav aria-label="主导航">
-          <ul class="nav-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="about.html">项目介绍</a></li>
-            <li><a href="interactive.html">互动体验</a></li>
-            <li><a href="showcase.html">共创展示</a></li>
-            <li><a href="feedback.html">意见反馈</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+    <header class="site-header"><div class="container navbar"><a href="index.html" class="logo">Aesthetic <span>Subject</span></a><nav aria-label="主导航"><ul class="nav-links"><li><a href="index.html">首页</a></li><li><a href="about.html">项目介绍</a></li><li><a href="interactive.html">互动体验</a></li><li><a href="showcase.html">共创展示</a></li><li><a href="feedback.html">意见反馈</a></li></ul></nav></div></header>
 
     <main>
-      <section class="page-hero hero">
-        <div class="container">
-          <div class="page-hero-card">
-            <div class="eyebrow">Feedback / Response Loop</div>
-            <h1>意见反馈</h1>
-            <p class="page-subtitle">欢迎留下对研究内容、互动题目、共创材料和页面体验的感受。回应不是终点，而是下一轮理解的入口。</p>
-            <div class="hero-meta"><span class="meta-tag">研究回应</span><span class="meta-tag">体验建议</span><span class="meta-tag">问题记录</span></div>
-          </div>
-        </div>
-      </section>
+      <section class="page-hero hero"><div class="container"><div class="page-hero-card"><div class="eyebrow">Feedback / Response Loop</div><h1>意见反馈</h1><p class="page-subtitle">一条具体的感受、一个犹豫的瞬间，或一项明确的建议，都能让这项研究回到真实的观看经验中。</p><div class="hero-meta"><span class="meta-tag">研究回应</span><span class="meta-tag">体验建议</span><span class="meta-tag">问题记录</span></div></div></div></section>
 
-      <section class="section">
-        <div class="container">
-          <h2 class="section-title">留下你的回应</h2>
-          <p class="section-desc">当前版本先提供页面内的提交反馈效果，留言不会自动上传到服务器；后续确定邮箱或表单服务后，再接入真实收集渠道。</p>
-          <div class="feedback-grid">
-            <article class="mail-visual-card">
-              <h3>回响装置</h3>
-              <p class="muted">你可以从“作品是否打动你”“作者是否重要”“AI 是否改变了你的判断”等角度留下回应。</p>
-              <div class="mail-visual" aria-hidden="true"><div class="mail-icon-box"></div></div>
-              <p class="muted" style="margin-top: 16px;">如果你愿意，也可以直接指出某一道互动题、某一段视频或某个概念让你产生了疑问。</p>
-            </article>
+      <section class="section"><div class="container">
+        <div class="section-heading-row feedback-heading"><div><span class="section-index">RESPONSE / OPEN</span><h2 class="section-title">让回应落在具体的位置</h2></div><p class="section-desc">不必写得完整或正确。选择一个让你停留、怀疑或想补充的瞬间开始即可。</p></div>
+        <div class="feedback-grid">
+          <aside class="response-guide" aria-label="回应提示">
+            <p class="response-guide-label">START WITH A MOMENT</p>
+            <h3>你可以从这里开始</h3>
+            <p class="muted">点击任一提示，表单会自动带入相应主题；也可以完全按照自己的方式书写。</p>
+            <div class="response-prompt-list">
+              <button class="response-prompt" type="button" data-topic="互动体验" data-placeholder="哪一道题、哪一个选择，最让你想停下来想一想？"><span>01</span><strong>一次判断</strong><small>哪一道题让你犹豫？</small></button>
+              <button class="response-prompt" type="button" data-topic="共创展示" data-placeholder="在观看视频或图像时，你注意到哪些人的选择或机器的痕迹？"><span>02</span><strong>一个细节</strong><small>什么最先抓住了你？</small></button>
+              <button class="response-prompt" type="button" data-topic="研究内容" data-placeholder="对于“分布式审美主体”，你认同、怀疑或希望补充什么？"><span>03</span><strong>一个问题</strong><small>你想继续追问什么？</small></button>
+            </div>
+            <p class="response-footnote">当前为展示版表单：提交后仅显示页面内确认，不会上传或保存个人信息。</p>
+          </aside>
 
-            <article class="feedback-card">
-              <h3>留言表单</h3>
-              <form class="feedback-form" id="feedback-form" novalidate>
-                <div><label for="user-name">你的名字（可选）</label><input class="feedback-input" id="user-name" name="name" type="text" autocomplete="name" placeholder="例如：某位浏览者 / 某位同学" /></div>
-                <div><label for="feedback-topic">反馈主题 <span aria-hidden="true">*</span></label><input class="feedback-input" id="feedback-topic" name="topic" type="text" required placeholder="例如：页面设计、互动体验、研究内容" /></div>
-                <div><label for="feedback-content">留言内容 <span aria-hidden="true">*</span></label><textarea class="feedback-textarea" id="feedback-content" name="content" required placeholder="欢迎留下你的感受、建议、问题或联想到的新想法……"></textarea></div>
-                <button class="feedback-submit-btn" type="submit">提交反馈</button>
-              </form>
-              <div class="submit-message-card" id="submit-message-card" role="status" aria-live="polite"><h3>反馈已记录</h3><p class="muted" id="submit-message-text">这里会在提交后显示提示信息。</p></div>
-            </article>
-          </div>
-          <p class="ritual-line">当一次观看结束时，回应并不是终点；它是另一轮理解开始的入口。</p>
+          <article class="feedback-card">
+            <div class="form-topline"><div><span class="form-kicker">YOUR NOTE</span><h3>写下回应</h3></div><span class="local-status">仅页面内演示</span></div>
+            <form class="feedback-form" id="feedback-form" novalidate>
+              <div><label for="user-name">你的名字 <span class="optional-label">可选</span></label><input class="feedback-input" id="user-name" name="name" type="text" autocomplete="name" placeholder="例如：某位浏览者 / 某位同学" /></div>
+              <div><label for="feedback-topic">反馈主题 <span aria-hidden="true">*</span></label><input class="feedback-input" id="feedback-topic" name="topic" type="text" required placeholder="例如：页面设计、互动体验、研究内容" /></div>
+              <div><label for="feedback-content">留言内容 <span aria-hidden="true">*</span></label><textarea class="feedback-textarea" id="feedback-content" name="content" required placeholder="欢迎留下你的感受、建议、问题或联想到的新想法……"></textarea></div>
+              <button class="feedback-submit-btn" type="submit"><span>提交这条回应</span><span aria-hidden="true">↗</span></button>
+            </form>
+            <div class="submit-message-card" id="submit-message-card" role="status" aria-live="polite"><h3>反馈已记录</h3><p class="muted" id="submit-message-text">这里会在提交后显示提示信息。</p></div>
+          </article>
         </div>
-      </section>
+        <p class="ritual-line">回应不会结束一次观看；它让下一次观看拥有新的起点。</p>
+      </div></section>
     </main>
 
     <footer class="site-footer"><div class="container"><div class="footer-card"><h3>继续探索</h3><div class="footer-links"><a href="about.html">回看研究框架</a><a href="interactive.html">重新参与互动</a><a href="showcase.html">观看共创展示</a></div></div></div></footer>
