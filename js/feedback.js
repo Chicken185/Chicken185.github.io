@@ -16,19 +16,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const content = contentInput.value.trim();
 
     if (!topic || !content) {
-      alert("请至少填写“反馈主题”和“留言内容”后再提交。");
+      messageCard.classList.add("show");
+      messageText.textContent = "请先填写反馈主题和留言内容。当前页面不会上传或保存未完成的内容。";
+      topicInput.focus();
       return;
     }
 
-    const displayName = name ? name : "匿名浏览者";
-    messageText.textContent =
-      `感谢你，${displayName}。` +
-      ` 你关于“${topic}”的反馈已被记录。` +
-      ` 当前是本地模拟提交效果，后续如果你愿意，也可以再接真实表单服务。`;
-
+    const displayName = name || "匿名浏览者";
+    messageText.textContent = `感谢你，${displayName}。你关于“${topic}”的回应已在本页面记录。当前版本是本地演示，留言尚未发送到服务器。`;
     messageCard.classList.add("show");
     form.reset();
-
     messageCard.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 });

@@ -1,145 +1,229 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const totalQuestions = 6;
+  const questions = Array.isArray(window.quizQuestions) ? window.quizQuestions : [];
+  const totalQuestions = questions.length;
+  const quizList = document.getElementById("quiz-list");
+  const totalCountEl = document.getElementById("total-count");
   const answeredCountEl = document.getElementById("answered-count");
   const quizStateTextEl = document.getElementById("quiz-state-text");
+  const progressLabelEl = document.getElementById("progress-label");
+  const progressFillEl = document.getElementById("progress-fill");
   const submitBtn = document.getElementById("submit-quiz-btn");
-  const showAnswerBtn = document.getElementById("show-answer-btn");
   const resetBtn = document.getElementById("reset-quiz-btn");
   const resultPanel = document.getElementById("quiz-result-panel");
   const summaryText = document.getElementById("quiz-summary-text");
-  const answerList = document.getElementById("answer-list");
+  const answerReview = document.getElementById("answer-review");
 
-  const answerKey = {
-    q1: "C",
-    q2: "A",
-    q3: "C",
-    q4: "B",
-    q5: "C",
-    q6: "B"
-  };
+  function optionLetter(index) {
+    return String.fromCharCode(65 + index);
+  }
 
-  const reflectiveKey = {
-    q2: ["A", "C"],
-    q4: ["B"],
-    q5: ["A", "C"],
-    q6: ["B"]
-  };
+  function renderQuestions() {
+    totalCountEl.textContent = totalQuestions;
+    progressLabelEl.textContent = `0 / ${totalQuestions}`;
+
+    questions.forEach(function (question, questionIndex) {
+      const card = document.createElement("article");
+      card.className = "quiz-card";
+      card.dataset.question = question.id;
+
+      const label = document.createElement("span");
+      label.className = "quiz-label";
+      label.textContent = question.label;
+      card.appendChild(label);
+
+      const title = document.createElement("h3");
+      title.textContent = question.title;
+      card.appendChild(title);
+
+      const description = document.createElement("p");
+      description.className = "quiz-desc";
+      description.textContent = question.description;
+      card.appendChild(description);
+
+      if (question.media && question.media.type === "image") {
+        const frame = document.createElement("div");
+        frame.className = "quiz-image-frame";
+        const image = document.createElement("img");
+        image.className = `quiz-image quiz-image--${question.id}`;
+        image.src = question.media.src;
+        image.alt = question.media.alt;
+        image.loading = "lazy";
+        frame.appendChild(image);
+        card.appendChild(frame);
+      }
+
+      if (question.media && question.media.type === "audio") {
+        const shell = document.createElement("div");
+        shell.className = "audio-player-shell";
+        const audio = document.createElement("audio");
+        audio.className = "quiz-audio";
+        audio.controls = true;
+        audio.preload = "metadata";
+        const source = document.createElement("source");
+        source.src = question.media.src;
+        source.type = "audio/midi";
+        audio.appendChild(source);
+        shell.appendChild(audio);
+
+        const note = document.createElement("p");
+        note.className = "audio-support-note";
+        note.textContent = "如果浏览器无法直接播放 MIDI，可以打开文件试听后返回继续作答。";
+        shell.appendChild(note);
+
+        const link = document.createElement("a");
+        link.className = "audio-file-link";
+        link.href = question.media.src;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = question.media.label;
+        shell.appendChild(link);
+        card.appendChild(shell);
+      }
+
+      const optionsGroup = document.createElement("div");
+      optionsGroup.className = "options-group";
+
+      question.options.forEach(function (option, optionIndex) {
+        const optionLabel = document.createElement("label");
+        optionLabel.className = "option-item";
+
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = question.id;
+        radio.value = optionLetter(optionIndex);
+        radio.dataset.questionIndex = questionIndex;
+
+        const optionText = document.createElement("span");
+        optionText.textContent = `${optionLetter(optionIndex)}. ${option}`;
+
+        optionLabel.appendChild(radio);
+        optionLabel.appendChild(optionText);
+        optionsGroup.appendChild(optionLabel);
+      });
+      card.appendChild(optionsGroup);
+
+      const feedback = document.createElement("div");
+      feedback.className = "question-feedback";
+      feedback.setAttribute("aria-live", "polite");
+      feedback.textContent = "你的选择已记录。完成全部题目后，可以查看这道题的讨论方向。";
+      card.appendChild(feedback);
+
+      quizList.appendChild(card);
+    });
+  }
 
   function getAnsweredCount() {
-    let count = 0;
+    return questions.filter(function (question) {
+      return document.querySelector(`input[name="${question.id}"]:checked`);
+    }).length;
+  }
 
-    for (let i = 1; i <= totalQuestions; i++) {
-      const checked = document.querySelector(`input[name="q${i}"]:checked`);
-      if (checked) count++;
-    }
-
-    return count;
+  function getUserAnswers() {
+    return questions.reduce(function (answers, question) {
+      const checked = document.querySelector(`input[name="${question.id}"]:checked`);
+      answers[question.id] = checked ? checked.value : null;
+      return answers;
+    }, {});
   }
 
   function updateStatus() {
     const answered = getAnsweredCount();
+    const percentage = totalQuestions ? (answered / totalQuestions) * 100 : 0;
     answeredCountEl.textContent = answered;
+    progressLabelEl.textContent = `${answered} / ${totalQuestions}`;
+    progressFillEl.style.width = `${percentage}%`;
 
     if (answered === 0) {
       quizStateTextEl.textContent = "等待作答";
     } else if (answered < totalQuestions) {
       quizStateTextEl.textContent = "进行中";
     } else {
-      quizStateTextEl.textContent = "可提交";
+      quizStateTextEl.textContent = "已完成，可查看结果";
     }
   }
 
-  function getUserAnswers() {
-    const answers = {};
-    for (let i = 1; i <= totalQuestions; i++) {
-      const checked = document.querySelector(`input[name="q${i}"]:checked`);
-      answers[`q${i}`] = checked ? checked.value : null;
-    }
-    return answers;
-  }
+  function buildReview(userAnswers) {
+    answerReview.innerHTML = "";
 
-  function calculateScore(userAnswers) {
-    let exactMatches = 0;
+    questions.forEach(function (question, index) {
+      const reviewItem = document.createElement("article");
+      reviewItem.className = "answer-review-item";
 
-    for (let i = 1; i <= totalQuestions; i++) {
-      const questionKey = `q${i}`;
-      if (userAnswers[questionKey] === answerKey[questionKey]) {
-        exactMatches++;
-      }
-    }
+      const heading = document.createElement("strong");
+      const userValue = userAnswers[question.id];
+      const userOption = userValue ? question.options[userValue.charCodeAt(0) - 65] : "未作答";
+      heading.textContent = `${index + 1}. 你的选择：${userValue ? `${userValue}. ${userOption}` : userOption}`;
+      reviewItem.appendChild(heading);
 
-    return exactMatches;
-  }
+      const reference = document.createElement("p");
+      reference.className = "muted";
+      reference.textContent = `参考倾向：${question.referenceLabel}`;
+      reviewItem.appendChild(reference);
 
-  function getResultNarrative(userAnswers, score) {
-    let reflectiveCount = 0;
+      const analysis = document.createElement("p");
+      analysis.className = "muted";
+      analysis.textContent = `讨论方向：${question.analysis}`;
+      reviewItem.appendChild(analysis);
 
-    Object.keys(reflectiveKey).forEach(function (key) {
-      const acceptedAnswers = reflectiveKey[key];
-      if (acceptedAnswers.includes(userAnswers[key])) {
-        reflectiveCount++;
-      }
+      answerReview.appendChild(reviewItem);
     });
-
-    if (score >= 5) {
-      return "你的判断与本页设置的参考答案高度接近。你更倾向于接受“人机协同”“分布式主体”这一类观点，也更容易从关系与过程，而非单一作者身份来理解审美经验。";
-    }
-
-    if (reflectiveCount >= 3) {
-      return "你的作答显示出较强的思辨性。你并没有把判断简单地归结为“人类 / 机器”二元对立，而是开始关注创作关系、参与程度与媒介条件对审美经验的影响。";
-    }
-
-    return "你的作答更接近传统主体视角。这并不意味着错误，而是说明你更重视人类作者、独立创作和明确边界。本项目正是希望通过这些题目，进一步引出这种传统判断与新型分布式主体之间的张力。";
   }
 
-  document.querySelectorAll('input[type="radio"]').forEach(function (radio) {
-    radio.addEventListener("change", updateStatus);
-  });
-
-  submitBtn.addEventListener("click", function () {
+  function showResult() {
     const answered = getAnsweredCount();
-
     if (answered < totalQuestions) {
-      alert(`你还有 ${totalQuestions - answered} 道题没有完成，请先全部作答。`);
+      const firstUnanswered = questions.find(function (question) {
+        return !document.querySelector(`input[name="${question.id}"]:checked`);
+      });
+      summaryText.textContent = `还有 ${totalQuestions - answered} 道题没有完成。先完成全部选择，再查看完整的讨论方向。`;
+      resultPanel.classList.add("show");
+      const firstInput = firstUnanswered && document.querySelector(`input[name="${firstUnanswered.id}"]`);
+      if (firstInput) firstInput.focus();
       return;
     }
 
     const userAnswers = getUserAnswers();
-    const score = calculateScore(userAnswers);
-    const narrative = getResultNarrative(userAnswers, score);
+    const matched = questions.filter(function (question) {
+      return question.referenceValues.includes(userAnswers[question.id]);
+    }).length;
 
-    resultPanel.classList.add("show");
-    summaryText.textContent = `你完成了全部 ${totalQuestions} 道题，其中有 ${score} 道与当前设置的参考答案一致。${narrative}`;
-    answerList.classList.add("hidden");
-    quizStateTextEl.textContent = "已提交";
-
-    resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  showAnswerBtn.addEventListener("click", function () {
-    resultPanel.classList.add("show");
-    answerList.classList.remove("hidden");
-
-    if (getAnsweredCount() < totalQuestions) {
-      summaryText.textContent = "你还没有完成全部题目，但你可以先查看当前设置的参考答案与解析。后续也可以继续作答再提交。";
+    let narrative = "你的选择保留了较多开放性，说明你没有轻易把审美判断归结为人类 / 机器二元对立。";
+    if (matched >= 6) {
+      narrative = "你的选择与本页设置的参考倾向较为接近，更关注人机协同、参与过程和分布式主体。";
+    } else if (matched <= 2) {
+      narrative = "你的选择与本页参考倾向保持了一定距离，更强调人类作者、作品边界或创作责任的明确性。";
     }
 
+    summaryText.textContent = `你完成了全部 ${totalQuestions} 道题，其中 ${matched} 道选择与本页参考倾向相近。${narrative} 这不是成绩，而是一份帮助继续讨论的阅读提示。`;
+    buildReview(userAnswers);
+    resultPanel.classList.add("show");
+    quizStateTextEl.textContent = "已查看结果";
     resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+  }
 
-  resetBtn.addEventListener("click", function () {
+  function resetQuiz() {
     document.querySelectorAll('input[type="radio"]').forEach(function (radio) {
       radio.checked = false;
     });
-
-    answeredCountEl.textContent = "0";
-    quizStateTextEl.textContent = "等待作答";
-    summaryText.textContent = "这里会在提交后显示你的结果总结。";
-    answerList.classList.add("hidden");
+    document.querySelectorAll(".question-feedback").forEach(function (feedback) {
+      feedback.classList.remove("show");
+    });
+    answerReview.innerHTML = "";
+    summaryText.textContent = "完成全部题目后，这里会显示你的选择与本页参考倾向之间的关系。";
     resultPanel.classList.remove("show");
-
+    updateStatus();
     window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+  }
 
+  renderQuestions();
+  quizList.addEventListener("change", function (event) {
+    if (!event.target.matches('input[type="radio"]')) return;
+    const card = event.target.closest(".quiz-card");
+    const feedback = card && card.querySelector(".question-feedback");
+    if (feedback) feedback.classList.add("show");
+    updateStatus();
+  });
+  submitBtn.addEventListener("click", showResult);
+  resetBtn.addEventListener("click", resetQuiz);
   updateStatus();
 });

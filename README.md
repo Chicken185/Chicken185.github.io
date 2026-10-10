@@ -1,2 +1,17 @@
-# Chicken185.github.io
-The website is designed for a team preparing to compete in a business competition.
+# 分布式审美主体研究项目
+
+这是一个围绕“人工智能时代美学的后人类主义转向”搭建的静态数字人文项目网站，主题聚焦于人工智能介入创作后，审美主体、作者身份与观看经验如何发生变化。
+
+## 页面结构
+
+- `index.html`：项目概览、研究问题、团队与研究路径
+- `about.html`：研究背景、核心概念、研究方法与文献线索
+- `interactive.html`：图像、声音和文字组成的互动判断
+- `showcase.html`：人机共创视频、提示词方向、筛选标准与视觉样本
+- `feedback.html`：项目回应与体验反馈
+
+## 技术说明
+
+网站使用原生 HTML、CSS 和 JavaScript，直接部署在 GitHub Pages，不依赖构建工具。互动题目的内容统一维护在 `data/questions.js` 中。
+
+反馈页面目前只提供本地演示效果，不会自动保存或发送访客留言。若后续需要正式收集反馈，应接入独立表单服务或后端接口，不能把 GitHub Token 放进前端代码。
